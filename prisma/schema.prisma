@@ -12,3 +12,47 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  username String @unique
+  password String
+}
+
+enum UPDATE_STATUS {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+model Property {
+  propertyId String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  title String @db.VarChar(255) 
+  subtitle String @db.VarChar(255)
+  location String @db.VarChar(80)
+  detailedLocation String @db.VarChar(255)
+  area String @db.VarChar(20)
+  roadWidth String @db.VarChar(20)
+  landFace String @db.VarChar(20)
+
+  landDetails String
+  status UPDATE_STATUS @default(AVAILABLE)
+
+  images String[]
+}
+
+model Update{
+  propertyId String @id @default(uuid())
+  
+}
+
+// model PropertyImage {
+//   id Int @id @default(autoincrement())
+//   url String
+//   propertyId String 
+//   belongsTo Property @relation(fields: [propertyId], references: [propertyId], onDelete: Cascade)
+// }
