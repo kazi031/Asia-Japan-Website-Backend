@@ -14,10 +14,11 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
-  username String @unique
-  password String
+  username  String   @unique
+  email String @unique
+  password  String
 }
 
 enum UPDATE_STATUS {
@@ -29,25 +30,19 @@ model Property {
   propertyId String @id @default(uuid())
 
   createdAt DateTime @default(now())
-  updatedAt DateTime
 
-  title String @db.VarChar(255) 
-  subtitle String @db.VarChar(255)
-  location String @db.VarChar(80)
+  title            String @db.VarChar(255)
+  subtitle         String @db.VarChar(255)
+  location         String @db.VarChar(80)
   detailedLocation String @db.VarChar(255)
-  area String @db.VarChar(20)
-  roadWidth String @db.VarChar(20)
-  landFace String @db.VarChar(20)
+  area             String @db.VarChar(20)
+  roadWidth        String @db.VarChar(20)
+  landFace         String @db.VarChar(20)
 
   landDetails String
-  status UPDATE_STATUS @default(AVAILABLE)
+  status      UPDATE_STATUS @default(AVAILABLE)
 
-  images String[]
-}
-
-model Update{
-  propertyId String @id @default(uuid())
-  
+  assets String[]
 }
 
 // model PropertyImage {
