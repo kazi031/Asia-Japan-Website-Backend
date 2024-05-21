@@ -5,7 +5,7 @@ const router = Router()
 // Property //
 
 router.get('/property', (req,res) => {
-    res.json({message: 'hello'})
+    res.json({message: 'message'})
 })
 router.get('/property/:id', () => {})
 
