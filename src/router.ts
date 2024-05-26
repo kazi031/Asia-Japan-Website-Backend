@@ -1,6 +1,7 @@
 import {Router} from 'express'
 import { body, oneOf, validationResult } from "express-validator";
-import { handleInputErrors, validateUpdateProperty } from './modules/middleware';
+import { handleInputErrors } from './modules/middleware';
+import { validatePostProperty, validateUpdateProperty } from './modules/propertyMiddleware'
 
 const router = Router()
 
@@ -16,7 +17,10 @@ router.put('/property/:id',
     handleInputErrors, 
     (req, res) => {}
 )
-router.post('/property', body('title').isString(), handleInputErrors, (req, res) => {})
+router.post('/property', 
+    validatePostProperty, 
+    handleInputErrors, 
+    (req, res) => {})
 
 router.delete('/property/:id', () => {})
 
