@@ -38,7 +38,7 @@ model Property {
   roadWidth        String @db.VarChar(20)
   landFace         String @db.VarChar(20)
 
-  landDetails String
+  landDetails      String
   status      UPDATE_STATUS @default(AVAILABLE)
 
   assets String[]
