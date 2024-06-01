@@ -1,0 +1,14 @@
+{
+    "title" : "Land sale in Bashundha　RA Block I",
+    "subtitle": "Cheap Land  Bashundhara　RA Block I",
+    "location": "Bashundhara R-A",
+    "detailedLocation": "Block I, Plot 199, Bashundhara R-A",
+    "area": "3 Katha",
+    "roadWidth": "25 feet",
+    "landFace": "South Face",
+    "landDetails": "Mirpur offers you this lovely home which is vacant right now. You do not need to worry 
+    about water, gas and electricity while staying in this home. With tiled flooring in the 
+    whole apartment, the flat also makes sure the washrooms are made with quality and 
+    durable fixtures. Moreover, the home retains the value of peaceful living while being 
+    conveniently close to shops, school and transport."
+}

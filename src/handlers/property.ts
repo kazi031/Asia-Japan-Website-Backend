@@ -55,6 +55,8 @@ export const createNewProperty = async (req, res, next) => {
                 baseUrl = 'http://localhost:3001';
             }
 
+            baseUrl = 'http://localhost:3001';
+
             return `${baseUrl}/${finalDestination}`.replace(/\\/g, '/');
         });
 
@@ -79,6 +81,7 @@ export const createNewProperty = async (req, res, next) => {
     }
 }; 
 
+// Update Property
 export const updateProperty = async (req, res, next) => {
     try {
         const { id } = req.params.id;
@@ -155,3 +158,49 @@ export const updateProperty = async (req, res, next) => {
         next(e);
     }
 }
+
+// Delete Property
+export const deleteProperty = async (req, res, next) => {
+    try {
+        const { id } = req.params.id;
+
+        if (!id) {
+            throw new Error('Property ID is required');
+        }
+
+        // Fetch the existing property data
+        const existingProperty = await prisma.property.findUnique({
+            where: { propertyId: id },
+        });
+
+        if (!existingProperty) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+
+        let baseUrl;
+        if (process.env.NODE_ENV === 'production') {
+            baseUrl = '';
+        } else {
+            baseUrl = 'http://localhost:3001';
+        }
+
+        // Delete associated files from the server
+        const assets = existingProperty.assets;
+        assets.forEach(assetUrl => {
+            const filePath = path.join(__dirname, '..', assetUrl.replace(baseUrl, '').replace(/^\//, ''));
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        });
+
+        // Delete the property record from the database
+        await prisma.property.delete({
+            where: { propertyId: id },
+        });
+
+        res.json({ message: 'Property deleted successfully' });
+    } catch (e) {
+        e.type = 'input';
+        next(e);
+    }
+};

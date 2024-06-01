@@ -3,15 +3,14 @@ import { body, oneOf, validationResult } from "express-validator";
 import { handleInputErrors } from './modules/middleware';
 import { validatePostProperty, validateUpdateProperty } from './modules/propertyMiddleware'
 import { protect } from './modules/auth'
+import { createNewProperty, getProperties } from './handlers/property';
 
 
 const router = Router()
 
 // Property //
 
-router.get('/property', (req,res) => {
-    res.json({message: 'message'})
-})
+router.get('/property', getProperties)
 router.get('/property/:id', () => {})
 
 router.put('/property/:id',
@@ -21,10 +20,8 @@ router.put('/property/:id',
     (req, res) => {}
 )
 router.post('/property', 
-    protect,
-    validatePostProperty, 
-    handleInputErrors, 
-    (req, res) => {})
+    protect, 
+    createNewProperty)
 
 router.delete('/property/:id', protect,
 () => {})
