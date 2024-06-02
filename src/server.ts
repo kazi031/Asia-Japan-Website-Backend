@@ -8,6 +8,7 @@ const app = express()
 
 app.use(cors())
 app.use(morgan('dev'))
+app.use('/propertyImages', express.static('propertyImages'));
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 

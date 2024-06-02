@@ -4,9 +4,13 @@ import { handleInputErrors } from './modules/middleware';
 import { validatePostProperty, validateUpdateProperty } from './modules/propertyMiddleware'
 import { protect } from './modules/auth'
 import { createNewProperty, getProperties } from './handlers/property';
+// const multer = require('multer');
+import multer from 'multer';
 
 
 const router = Router()
+
+const upload = multer({ dest: 'propertyImages/' }).array('assets', 3);
 
 // Property //
 
@@ -21,6 +25,9 @@ router.put('/property/:id',
 )
 router.post('/property', 
     protect, 
+    upload,
+    validatePostProperty,
+    handleInputErrors,
     createNewProperty)
 
 router.delete('/property/:id', protect,

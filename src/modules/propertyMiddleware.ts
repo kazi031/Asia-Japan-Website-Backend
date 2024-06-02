@@ -36,15 +36,15 @@ export const validateUpdateProperty = [
     body('landFace').exists().isString().withMessage('Name must be a string'), 
     body('landDetails').exists().isString().withMessage('Name must be a string'), 
 
-    body('assets')
-      .exists()
-      .isArray({ min: 3 , max: 3 }).withMessage('Images must be an array with exactly 3 URLs')
-      .custom((array) => {
-        array.forEach(url => {
-          if (!/^(http|https):\/\/[^ "]+$/.test(url)) {
-            throw new Error('Each image URL must be a valid URL');
-          }
-        });
-        return true;
-      }).withMessage('Invalid image URL'),
+    // body('assets')
+    //   .exists()
+    //   .isArray({ min: 3 , max: 3 }).withMessage('Images must be an array with exactly 3 URLs')
+    //   .custom((array) => {
+    //     array.forEach(url => {
+    //       if (!/^(http|https):\/\/[^ "]+$/.test(url)) {
+    //         throw new Error('Each image URL must be a valid URL');
+    //       }
+    //     });
+    //     return true;
+    //   }).withMessage('Invalid image URL'),
   ];

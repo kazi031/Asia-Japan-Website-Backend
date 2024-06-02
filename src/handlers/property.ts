@@ -3,9 +3,6 @@ import path from 'path';
 
 import prisma from "../db";
 
-const multer = require('multer');
-
-const upload = multer({ dest: 'propertyImages/' }).array('images', 4);
 
 // GET all Properties
 export const getProperties = async (req, res) => {
@@ -35,7 +32,8 @@ export const createNewProperty = async (req, res, next) => {
                roadWidth, 
                landFace, 
                landDetails} = req.body;
-        const files = req.flies;
+        
+        const files = req.files;
 
         if (!files || files.length === 0) {
             throw new Error('No files uploaded');
