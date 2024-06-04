@@ -16,14 +16,6 @@ export const validateUpdateProperty = [
     body('assets')
       .optional()
       .isArray({ min: 3 , max: 3 }).withMessage('Images must be an array with at least zero to three URL')
-      .custom((array) => {
-        array.forEach(url => {
-          if (!/^(http|https):\/\/[^ "]+$/.test(url)) {
-            throw new Error('Each image URL must be a valid URL');
-          }
-        });
-        return true;
-      }).withMessage('Invalid image URL'),
   ];
 
   export const validatePostProperty = [

@@ -35,13 +35,34 @@ export const createNewProperty = async (req, res, next) => {
         
         const files = req.files;
 
-        if (!files || files.length === 0) {
+        if (!files || files.length < 3) {
             throw new Error('No files uploaded');
         }
 
-        const imageUrls = files.map(file => {
+        
+
+        const createdProperty = await prisma.property.create({
+            data: {
+                title: title,
+                subtitle: subtitle,
+                location: location,
+                detailedLocation: detailedLocation,
+                area: area,
+                roadWidth: roadWidth,
+                landFace: landFace,
+                landDetails: landDetails,
+                assets: []
+            }
+        });
+
+        const propertyId = createdProperty.propertyId;
+        const imageUrls = [];
+        
+        files.forEach((file, index) => {
             const imagePath = file.path;
-            const finalDestination = path.join('propertyImages/', file.originalname);
+            const fileExtension = path.extname(file.originalname); 
+            const finalFileName = `img${propertyId}${index + 1}${fileExtension}`;
+            const finalDestination = path.join('propertyImages', finalFileName);
 
             fs.renameSync(imagePath, finalDestination);
 
@@ -55,24 +76,20 @@ export const createNewProperty = async (req, res, next) => {
 
             baseUrl = 'http://localhost:3001';
 
-            return `${baseUrl}/${finalDestination}`.replace(/\\/g, '/');
+            imageUrls.push(`${baseUrl}/${finalDestination}`.replace(/\\/g, '/'));
+
+            // return `${baseUrl}/${finalDestination}`.replace(/\\/g, '/');
         });
 
-        const createdProperty = await prisma.property.create({
-            data: {
-                title: title,
-                subtitle: subtitle,
-                location: location,
-                detailedLocation: detailedLocation,
-                area: area,
-                roadWidth: roadWidth,
-                landFace: landFace,
-                landDetails: landDetails,
-                assets: imageUrls
-            }
+        
+        const updatedProperty = await prisma.property.update({
+            where: { propertyId },
+            data: { assets: imageUrls }
         });
 
-        res.json(createdProperty);
+        res.json(updatedProperty);
+
+
     } catch (e) {
         e.type = 'input';
         next(e);

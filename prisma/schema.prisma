@@ -27,7 +27,7 @@ enum UPDATE_STATUS {
 
 model Property {
   propertyId Int @id @default(autoincrement())
-
+  // propertyId String   @id @default(uuid())
   createdAt DateTime @default(now())
 
   title            String @db.VarChar(255)
