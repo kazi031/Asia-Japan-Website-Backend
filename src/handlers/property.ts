@@ -12,7 +12,7 @@ export const getProperties = async (req, res) => {
 
 // GET one Property
 export const getOneProperty = async (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
     const property = await prisma.property.findUniqueOrThrow({
         where: {
             propertyId: id
@@ -99,7 +99,8 @@ export const createNewProperty = async (req, res, next) => {
 // Update Property
 export const updateProperty = async (req, res, next) => {
     try {
-        const { id } = req.params.id;
+        const { id } = req.params;
+        const propertyId = parseInt(id);
         const {title, 
             subtitle, 
             location, 
@@ -111,43 +112,54 @@ export const updateProperty = async (req, res, next) => {
             status} = req.body;
         const files = req.flies;
 
-        if (!id) {
+        if (!propertyId) {
             throw new Error('Property ID is required');
         }
 
-        // Image Update
-        let imageUrls = [];
-
-        if (files && files.length > 0) {
-            imageUrls = files.map(file => {
-                const imagePath = file.path;
-                const finalDestination = path.join('propertyImages/', file.originalname);
-
-                // Move file to final destination
-                fs.renameSync(imagePath, finalDestination);
-
-                let baseUrl;
-
-                if (process.env.NODE_ENV === 'production') {
-                    baseUrl = '';
-                } else {
-                    baseUrl = 'http://localhost:3001';
-                }
-
-                return `${baseUrl}/${finalDestination}`.replace(/\\/g, '/');
-            });
-        }
-
-        const existingProperty = await prisma.property.findUnique({
-            where: { propertyId: id },
-        });
+        const existingProperty = await prisma.property.findUniqueOrThrow({
+            where: {
+                propertyId: propertyId
+            }
+        })
 
         if (!existingProperty) {
             throw new Error('Property not found');
         }
 
+
+
+        // Image Update
+        const imageUrls = [];
+
+        const exproplen = existingProperty.assets.length;
+
+        if(files){
+            files.forEach((file, index) => {
+                const imagePath = file.path;
+                const fileExtension = path.extname(file.originalname); 
+                const finalFileName = `img${propertyId}${exproplen + index + 1}${fileExtension}`;
+                const finalDestination = path.join('propertyImages', finalFileName);
+    
+                fs.renameSync(imagePath, finalDestination);
+    
+                let baseUrl;
+    
+                if (process.env.NODE_ENV === 'production') {
+                    baseUrl = '';
+                } else {
+                    baseUrl = 'http://localhost:3001';
+                }
+    
+                baseUrl = 'http://localhost:3001';
+    
+                imageUrls.push(`${baseUrl}/${finalDestination}`.replace(/\\/g, '/'));
+    
+                // return `${baseUrl}/${finalDestination}`.replace(/\\/g, '/');
+            });
+
+        }
         // Use existing images if no new images are provided
-        const updatedAssets = imageUrls.length > 0 ? imageUrls : existingProperty.assets;
+        const updatedAssets = imageUrls.length > 0 ? existingProperty.assets.concat(imageUrls) : existingProperty.assets;
 
         // Prepare updated data
         const updatedData = {
@@ -164,7 +176,7 @@ export const updateProperty = async (req, res, next) => {
         };
 
         const updatedProperty = await prisma.property.update({
-            where: { propertyId: id },
+            where: { propertyId: propertyId },
             data: updatedData
         });
         res.json(updatedProperty);

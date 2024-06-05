@@ -3,7 +3,7 @@ import { body, oneOf, validationResult } from "express-validator";
 import { handleInputErrors } from './modules/middleware';
 import { validatePostProperty, validateUpdateProperty } from './modules/propertyMiddleware'
 import { protect } from './modules/auth'
-import { createNewProperty, getProperties } from './handlers/property';
+import { createNewProperty, getProperties, updateProperty } from './handlers/property';
 // const multer = require('multer');
 import multer from 'multer';
 
@@ -19,8 +19,10 @@ router.get('/property/:id', () => {})
 
 router.put('/property/:id',
     protect,
+    upload,
     validateUpdateProperty,
     handleInputErrors, 
+    updateProperty,
     (req, res) => {}
 )
 router.post('/property', 

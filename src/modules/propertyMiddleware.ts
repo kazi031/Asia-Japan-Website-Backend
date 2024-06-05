@@ -13,9 +13,10 @@ export const validateUpdateProperty = [
 
     body('status').optional().isIn(['AVAILABLE','UNAVAILABLE']),
 
-    body('assets')
-      .optional()
-      .isArray({ min: 3 , max: 3 }).withMessage('Images must be an array with at least zero to three URL')
+    // body('assets')
+    //   .optional()
+    //   .isArray({ min: 3 , max: 3 }).withMessage('Images must be an array with at least zero to three URL')
+
   ];
 
   export const validatePostProperty = [
