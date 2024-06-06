@@ -12,6 +12,8 @@ const router = Router()
 
 const upload = multer({ dest: 'propertyImages/' }).array('assets', 3);
 
+const updateUpload = multer({ dest: 'propertyImages/' }).array('assets', 2);
+
 // Property //
 
 router.get('/property', getProperties)
@@ -19,11 +21,10 @@ router.get('/property/:id', () => {})
 
 router.put('/property/:id',
     protect,
-    upload,
+    updateUpload,
     validateUpdateProperty,
     handleInputErrors, 
-    updateProperty,
-    (req, res) => {}
+    updateProperty
 )
 router.post('/property', 
     protect, 

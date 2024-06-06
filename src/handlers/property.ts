@@ -112,6 +112,8 @@ export const updateProperty = async (req, res, next) => {
             status} = req.body;
         const files = req.flies;
 
+        console.log("Files received:", files); 
+
         if (!propertyId) {
             throw new Error('Property ID is required');
         }
@@ -132,9 +134,12 @@ export const updateProperty = async (req, res, next) => {
         const imageUrls = [];
 
         const exproplen = existingProperty.assets.length;
-
+        console.log(exproplen);
+        console.log(files.length);
         if(files){
+            console.log(exproplen);
             files.forEach((file, index) => {
+                console.log(exproplen);
                 const imagePath = file.path;
                 const fileExtension = path.extname(file.originalname); 
                 const finalFileName = `img${propertyId}${exproplen + index + 1}${fileExtension}`;
@@ -156,10 +161,9 @@ export const updateProperty = async (req, res, next) => {
     
                 // return `${baseUrl}/${finalDestination}`.replace(/\\/g, '/');
             });
-
         }
         // Use existing images if no new images are provided
-        const updatedAssets = imageUrls.length > 0 ? existingProperty.assets.concat(imageUrls) : existingProperty.assets;
+        const updatedAssets = imageUrls.length > 0 ? [...existingProperty.assets, ...imageUrls] : existingProperty.assets;
 
         // Prepare updated data
         const updatedData = {
