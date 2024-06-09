@@ -5,20 +5,34 @@ import prisma from "../db";
 
 
 // GET all Properties
-export const getProperties = async (req, res) => {
-    const properties = await prisma.property.findMany();
-    res.json({data: properties});
+export const getProperties = async (req, res, next) => {
+    try {
+        const properties = await prisma.property.findMany();
+        res.json({data: properties});
+    } catch (e) {
+        e.type = 'input';
+        next(e);
+    }
+   
 }
 
 // GET one Property
-export const getOneProperty = async (req, res) => {
-    const id = req.params.id;
-    const property = await prisma.property.findUniqueOrThrow({
-        where: {
-            propertyId: id
-        }
-    })
-    res.json({data: property});
+export const getOneProperty = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const propertyId = parseInt(id);
+        const property = await prisma.property.findUniqueOrThrow({
+            where: {
+                propertyId: propertyId
+            }
+        })
+        res.json({data: property});
+    } catch(e) {
+        e.type = 'input';
+        next(e)
+    }
+
+
 }
 
 // Create Property
@@ -190,40 +204,50 @@ export const updateProperty = async (req, res, next) => {
 // Delete Property
 export const deleteProperty = async (req, res, next) => {
     try {
-        const { id } = req.params.id;
+        const { id } = req.params;
+        const propertyId = parseInt(id);
 
-        if (!id) {
+        if (!propertyId) {
             throw new Error('Property ID is required');
         }
 
         // Fetch the existing property data
         const existingProperty = await prisma.property.findUnique({
-            where: { propertyId: id },
+            where: { propertyId: propertyId },
         });
 
         if (!existingProperty) {
             return res.status(404).json({ message: 'Property not found' });
         }
 
-        let baseUrl;
-        if (process.env.NODE_ENV === 'production') {
-            baseUrl = '';
-        } else {
-            baseUrl = 'http://localhost:3001';
-        }
+        // Determine the base URL
+        let baseUrl = 'http://localhost:3001';
 
         // Delete associated files from the server
         const assets = existingProperty.assets;
         assets.forEach(assetUrl => {
-            const filePath = path.join(__dirname, '..', assetUrl.replace(baseUrl, '').replace(/^\//, ''));
+            // Extract the file name from the URL
+            const fileName = path.basename(assetUrl); // Extracts "img51.jpg"
+            const filePath = path.join(__dirname, '..', '..', 'propertyImages', fileName); // Constructs the correct file path
+
+            console.log(`Attempting to delete file: ${filePath}`); // Debug log
+
+            // Check if the file exists and then delete it
             if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
+                try {
+                    fs.unlinkSync(filePath);
+                    console.log(`Deleted file: ${filePath}`);
+                } catch (err) {
+                    console.error(`Error deleting file: ${filePath}`, err);
+                }
+            } else {
+                console.log(`File not found: ${filePath}`);
             }
         });
 
         // Delete the property record from the database
         await prisma.property.delete({
-            where: { propertyId: id },
+            where: { propertyId: propertyId }
         });
 
         res.json({ message: 'Property deleted successfully' });
