@@ -12,3 +12,77 @@
     durable fixtures. Moreover, the home retains the value of peaceful living while being 
     conveniently close to shops, school and transport."
 }
+
+export const createNewProperty = async (req, res, next) => {
+    try {
+        const {title, 
+               subtitle, 
+               location, 
+               detailedLocation, 
+               area, 
+               roadWidth, 
+               landFace, 
+               landDetails} = req.body;
+        
+        const files = req.files;
+
+        if (!files || files.length < 3) {
+            throw new Error('No files uploaded');
+        }
+
+        
+
+        const createdProperty = await prisma.property.create({
+            data: {
+                title: title,
+                subtitle: subtitle,
+                location: location,
+                detailedLocation: detailedLocation,
+                area: area,
+                roadWidth: roadWidth,
+                landFace: landFace,
+                landDetails: landDetails,
+                assets: []
+            }
+        });
+
+        const propertyId = createdProperty.propertyId;
+        const imageUrls = [];
+        
+        files.forEach((file, index) => {
+            const imagePath = file.path;
+            const fileExtension = path.extname(file.originalname); 
+            const finalFileName = `img${propertyId}${index + 1}${fileExtension}`;
+            const finalDestination = path.join('propertyImages', finalFileName);
+
+            fs.renameSync(imagePath, finalDestination);
+
+            let baseUrl;
+
+            if (process.env.NODE_ENV === 'production') {
+                baseUrl = '';
+            } else {
+                baseUrl = 'http://localhost:3001';
+            }
+
+            baseUrl = 'http://localhost:3001';
+
+            imageUrls.push(`${baseUrl}/${finalDestination}`.replace(/\\/g, '/'));
+
+            // return `${baseUrl}/${finalDestination}`.replace(/\\/g, '/');
+        });
+
+        
+        const updatedProperty = await prisma.property.update({
+            where: { propertyId },
+            data: { assets: imageUrls }
+        });
+
+        res.json(updatedProperty);
+
+
+    } catch (e) {
+        e.type = 'input';
+        next(e);
+    }
+};

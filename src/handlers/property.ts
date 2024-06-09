@@ -110,9 +110,9 @@ export const updateProperty = async (req, res, next) => {
             landFace, 
             landDetails,
             status} = req.body;
-        const files = req.flies;
+        
+        const files = req.files;
 
-        console.log("Files received:", files); 
 
         if (!propertyId) {
             throw new Error('Property ID is required');
@@ -134,10 +134,7 @@ export const updateProperty = async (req, res, next) => {
         const imageUrls = [];
 
         const exproplen = existingProperty.assets.length;
-        console.log(exproplen);
-        console.log(files.length);
         if(files){
-            console.log(exproplen);
             files.forEach((file, index) => {
                 console.log(exproplen);
                 const imagePath = file.path;
