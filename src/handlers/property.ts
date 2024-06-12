@@ -104,8 +104,7 @@ export const createNewProperty = async (req, res, next) => {
         res.json(updatedProperty);
 
 
-    } catch (e) {
-        e.type = 'input';
+    } catch (e) { 
         next(e);
     }
 }; 
