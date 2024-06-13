@@ -41,17 +41,14 @@ describe('user handler', () => {
         // Mock request and response objects
         const req = { body: { email: 'nayan.com', password: 'admin' } };
         const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn().mockImplementation((data) => {
-                // Check if the validation correctly identified the invalid email
-                expect(data.errors).toEqual(
-                    expect.arrayContaining([
-                        expect.objectContaining({
-                            msg: 'Email must be valid'
-                        })
-                    ])
-                );
-            })
+            json(data) {
+                // this will be executed if validation does not fail
+                throw new Error('Validation should have failed');
+            },
+            status(code) {
+                this.statusCode = code;
+                return this;
+            }
         };
         const next = jest.fn();
 
@@ -65,12 +62,16 @@ describe('user handler', () => {
             res.status(400).json({ errors: errors.array() });
         }
 
-        // The following line should not be reached if validation fails
         await user.createNewUser(req, res, next);
 
-        // Ensure the validation error was caught
+        // Ensure the error was caught
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith({
+            errors: expect.arrayContaining([
+                expect.objectContaining({
+                    msg: 'Email must be valid'
+                })
+            ])
+        });
     });
-    
 });
