@@ -83,12 +83,12 @@ export const createNewProperty = async (req, res, next) => {
             let baseUrl;
 
             if (process.env.NODE_ENV === 'production') {
-                baseUrl = '';
+                baseUrl = 'https://asia-japan-dhaka.onrender.com';
             } else {
                 baseUrl = 'http://localhost:3001';
             }
 
-            baseUrl = 'http://localhost:3001';
+            // baseUrl = 'http://localhost:3001';
 
             imageUrls.push(`${baseUrl}/${finalDestination}`.replace(/\\/g, '/'));
 
@@ -160,12 +160,12 @@ export const updateProperty = async (req, res, next) => {
                 let baseUrl;
     
                 if (process.env.NODE_ENV === 'production') {
-                    baseUrl = '';
+                    baseUrl = 'https://asia-japan-dhaka.onrender.com';
                 } else {
                     baseUrl = 'http://localhost:3001';
                 }
     
-                baseUrl = 'http://localhost:3001';
+                // baseUrl = 'http://localhost:3001';
     
                 imageUrls.push(`${baseUrl}/${finalDestination}`.replace(/\\/g, '/'));
     
@@ -220,7 +220,13 @@ export const deleteProperty = async (req, res, next) => {
         }
 
         // Determine the base URL
-        let baseUrl = 'http://localhost:3001';
+
+        let baseUrl;
+        if (process.env.NODE_ENV === 'production') {
+            baseUrl = 'https://asia-japan-dhaka.onrender.com';
+        } else {
+            baseUrl = 'http://localhost:3001';
+        }
 
         // Delete associated files from the server
         const assets = existingProperty.assets;
